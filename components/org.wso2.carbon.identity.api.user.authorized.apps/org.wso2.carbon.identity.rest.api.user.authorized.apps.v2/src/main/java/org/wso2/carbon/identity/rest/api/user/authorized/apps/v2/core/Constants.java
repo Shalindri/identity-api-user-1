@@ -35,7 +35,9 @@ public class Constants {
         ERROR_CODE_INVALID_APPLICATION_ID("10001", "Invalid application ID",
                 "An application with ID: %s cannot be found for user: %s."),
         ERROR_CODE_APPLICATION_NOT_FOUND("10002", "Invalid application ID.", "Unable to find any " +
-                "application with the application ID: %s."),
+                "application with the application ID: %s in tenant domain: %s"),
+        ERROR_CODE_INVALID_INBOUND_PROTOCOL("10003", "Inbound protocol not found.", "Inbound " +
+                "protocol cannot be found for the provided application ID: %s tenant domain: %s"),
 
         // Server Errors.
         ERROR_CODE_GETTING_APPLICATION_INFORMATION("15001", "Error getting application information",
@@ -53,9 +55,7 @@ public class Constants {
                 "A system error occurred while retrieving authorized applications for " +
                         "user: %s"),
         ERROR_CODE_REVOKE_TOKEN_BY_APP_ID("15006", "Error revoking issued tokens", "A system " +
-                "error occurred while revoking issued tokens for application: %s"),
-        ERROR_CODE_INVALID_INBOUND_PROTOCOL("15007", "Inbound protocol not found.", "Inbound " +
-                "protocol cannot be found for the provided app id: %s");
+                "error occurred while revoking issued tokens for application: %s in tenant domain: %s");
 
         private final String code;
         private final String message;

@@ -235,7 +235,7 @@ public class AuthorizedAppsService {
     public void deleteIssuedTokensByAppId(String applicationId) {
 
         String tenantDomain = ContextLoader.getTenantDomainFromContext();
-        InboundAuthenticationRequestConfig reqConfig = getInboundAuthRequestConfig(applicationId, OAUTH2, tenantDomain);
+        InboundAuthenticationRequestConfig reqConfig = getInboundAuthRequestConfig(applicationId, tenantDomain);
         String clientId = reqConfig.getInboundAuthKey();
 
         OAuthAppRevocationRequestDTO oAuthAppRevocationRequestDTO = new OAuthAppRevocationRequestDTO();
@@ -243,30 +243,24 @@ public class AuthorizedAppsService {
         oAuthAppRevocationRequestDTO.setConsumerKey(clientId);
         oAuthAppRevocationRequestDTO.setTenantDomain(tenantDomain);
         try {
-            OAuthRevocationResponseDTO oAuthRevocationResponseDTO =
-                    oAuthAdminService.revokeIssuedTokensByApplication(oAuthAppRevocationRequestDTO);
-            if (!oAuthRevocationResponseDTO.isError()) {
-                //TODO: Handle
-                log.warn("Given application: " + applicationId + " has been deleted by a PreRevokeListener.");
-            }
+            oAuthAdminService.revokeIssuedTokensByApplication(oAuthAppRevocationRequestDTO);
         } catch (IdentityOAuthAdminException e) {
             throw handleError(Response.Status.INTERNAL_SERVER_ERROR,
-                    Constants.ErrorMessages.ERROR_CODE_REVOKE_TOKEN_BY_APP_ID, applicationId);
+                    Constants.ErrorMessages.ERROR_CODE_REVOKE_TOKEN_BY_APP_ID, applicationId, tenantDomain);
         }
     }
 
-    private InboundAuthenticationRequestConfig getInboundAuthRequestConfig(String applicationId, String tenantDomain,
-                                                                           String inboundType) {
+    private InboundAuthenticationRequestConfig getInboundAuthRequestConfig(String applicationId, String tenantDomain) {
 
         ServiceProvider application = getServiceProvider(applicationId, tenantDomain);
         // Extract the inbound authentication request config for the given inbound type.
         InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig =
-                getInboundAuthenticationRequestConfig(application, inboundType);
+                getInboundAuthenticationRequestConfig(application, OAUTH2);
 
         if (inboundAuthenticationRequestConfig == null) {
             // This means the inbound is not configured for the particular app.
             throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_INVALID_INBOUND_PROTOCOL,
-                    applicationId);
+                    applicationId, tenantDomain);
         }
         return inboundAuthenticationRequestConfig;
     }
@@ -277,12 +271,12 @@ public class AuthorizedAppsService {
             ServiceProvider application = applicationManagementService.getServiceProvider(applicationId, tenantDomain);
             if (application == null) {
                 throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_APPLICATION_NOT_FOUND,
-                        applicationId);
+                        applicationId, tenantDomain);
             }
             return application;
         } catch (IdentityApplicationManagementException e) {
             throw handleError(Response.Status.INTERNAL_SERVER_ERROR,
-                    Constants.ErrorMessages.ERROR_CODE_GETTING_APPLICATION_INFORMATION, applicationId);
+                    Constants.ErrorMessages.ERROR_CODE_GETTING_APPLICATION_INFORMATION, applicationId, tenantDomain);
         }
     }
 

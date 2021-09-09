@@ -23,7 +23,7 @@ import org.wso2.carbon.identity.rest.api.user.authorized.apps.v2.core.Authorized
 import javax.ws.rs.core.Response;
 
 /**
- * Implementation of {@link ApplicationsApiService}
+ * Implementation of {@link ApplicationsApiService}.
  */
 public class ApplicationsApiServiceImpl implements ApplicationsApiService {
 
