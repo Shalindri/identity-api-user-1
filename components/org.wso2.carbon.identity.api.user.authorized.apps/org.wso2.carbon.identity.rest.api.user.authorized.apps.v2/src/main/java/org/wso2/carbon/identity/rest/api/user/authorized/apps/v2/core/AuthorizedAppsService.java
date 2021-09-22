@@ -255,12 +255,12 @@ public class AuthorizedAppsService {
         ServiceProvider application = getServiceProvider(applicationId, tenantDomain);
         // Extract the inbound authentication request config for the given inbound type.
         InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig =
-                getInboundAuthenticationRequestConfig(application, OAUTH2);
+                getInboundAuthenticationRequestConfig(application);
 
         if (inboundAuthenticationRequestConfig == null) {
             // This means the inbound is not configured for the particular app.
             throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_INVALID_INBOUND_PROTOCOL,
-                    applicationId, tenantDomain);
+                    OAUTH2, applicationId, tenantDomain);
         }
         return inboundAuthenticationRequestConfig;
     }
@@ -280,15 +280,14 @@ public class AuthorizedAppsService {
         }
     }
 
-    private InboundAuthenticationRequestConfig getInboundAuthenticationRequestConfig(ServiceProvider application,
-                                                                                     String inboundType) {
+    private InboundAuthenticationRequestConfig getInboundAuthenticationRequestConfig(ServiceProvider application) {
 
         InboundAuthenticationConfig inboundAuthConfig = application.getInboundAuthenticationConfig();
         if (inboundAuthConfig != null) {
             InboundAuthenticationRequestConfig[] inbounds = inboundAuthConfig.getInboundAuthenticationRequestConfigs();
             if (inbounds != null) {
                 return Arrays.stream(inbounds)
-                        .filter(inbound -> inboundType.equals(inbound.getInboundAuthType()))
+                        .filter(inbound -> OAUTH2.equals(inbound.getInboundAuthType()))
                         .findAny()
                         .orElse(null);
             }

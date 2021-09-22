@@ -37,7 +37,7 @@ public class Constants {
         ERROR_CODE_APPLICATION_NOT_FOUND("10002", "Invalid application ID.", "Unable to find any " +
                 "application with the application ID: %s in tenant domain: %s"),
         ERROR_CODE_INVALID_INBOUND_PROTOCOL("10003", "Inbound protocol not found.", "Inbound " +
-                "protocol cannot be found for the provided application ID: %s tenant domain: %s"),
+                "protocol: %s cannot be found for the provided application ID: %s in tenant domain: %s"),
 
         // Server Errors.
         ERROR_CODE_GETTING_APPLICATION_INFORMATION("15001", "Error getting application information",
