@@ -235,12 +235,22 @@ public class AuthorizedAppsService {
     public void deleteIssuedTokensByAppId(String applicationId) {
 
         String tenantDomain = ContextLoader.getTenantDomainFromContext();
-        InboundAuthenticationRequestConfig reqConfig = getInboundAuthRequestConfig(applicationId, tenantDomain);
-        String clientId = reqConfig.getInboundAuthKey();
+        ServiceProvider application = getServiceProvider(applicationId, tenantDomain);
+
+        // Extract the inbound authentication request config for the given inbound type.
+        InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig =
+                getInboundAuthenticationRequestConfig(application);
+        if (inboundAuthenticationRequestConfig == null) {
+            // This means the inbound is not configured for the particular app.
+            throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_INVALID_INBOUND_PROTOCOL,
+                    OAUTH2, applicationId, tenantDomain);
+        }
+        String clientId = inboundAuthenticationRequestConfig.getInboundAuthKey();
 
         OAuthAppRevocationRequestDTO oAuthAppRevocationRequestDTO = new OAuthAppRevocationRequestDTO();
         oAuthAppRevocationRequestDTO.setApplicationName(applicationId);
         oAuthAppRevocationRequestDTO.setConsumerKey(clientId);
+        oAuthAppRevocationRequestDTO.setSaasApp(application.isSaasApp());
         oAuthAppRevocationRequestDTO.setTenantDomain(tenantDomain);
         try {
             oAuthAdminService.revokeIssuedTokensByApplication(oAuthAppRevocationRequestDTO);
@@ -248,21 +258,6 @@ public class AuthorizedAppsService {
             throw handleError(Response.Status.INTERNAL_SERVER_ERROR,
                     Constants.ErrorMessages.ERROR_CODE_REVOKE_TOKEN_BY_APP_ID, applicationId, tenantDomain);
         }
-    }
-
-    private InboundAuthenticationRequestConfig getInboundAuthRequestConfig(String applicationId, String tenantDomain) {
-
-        ServiceProvider application = getServiceProvider(applicationId, tenantDomain);
-        // Extract the inbound authentication request config for the given inbound type.
-        InboundAuthenticationRequestConfig inboundAuthenticationRequestConfig =
-                getInboundAuthenticationRequestConfig(application);
-
-        if (inboundAuthenticationRequestConfig == null) {
-            // This means the inbound is not configured for the particular app.
-            throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_INVALID_INBOUND_PROTOCOL,
-                    OAUTH2, applicationId, tenantDomain);
-        }
-        return inboundAuthenticationRequestConfig;
     }
 
     private ServiceProvider getServiceProvider(String applicationId, String tenantDomain) {
