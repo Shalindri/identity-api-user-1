@@ -228,9 +228,9 @@ public class AuthorizedAppsService {
     }
 
     /**
-     * Delete issued tokens for a given application id.
+     * Delete issued tokens for a given application ID.
      *
-     * @param applicationId Application Id.
+     * @param applicationId Application ID
      */
     public void deleteIssuedTokensByAppId(String applicationId) {
 
@@ -246,9 +246,11 @@ public class AuthorizedAppsService {
                     OAUTH2, applicationId, tenantDomain);
         }
         String clientId = inboundAuthenticationRequestConfig.getInboundAuthKey();
+        String applicationName = application.getApplicationName();
 
         OAuthAppRevocationRequestDTO oAuthAppRevocationRequestDTO = new OAuthAppRevocationRequestDTO();
-        oAuthAppRevocationRequestDTO.setApplicationName(applicationId);
+        oAuthAppRevocationRequestDTO.setApplicationResourceId(applicationId);
+        oAuthAppRevocationRequestDTO.setApplicationName(applicationName);
         oAuthAppRevocationRequestDTO.setConsumerKey(clientId);
         oAuthAppRevocationRequestDTO.setSaasApp(application.isSaasApp());
         oAuthAppRevocationRequestDTO.setTenantDomain(tenantDomain);
@@ -263,7 +265,8 @@ public class AuthorizedAppsService {
     private ServiceProvider getServiceProvider(String applicationId, String tenantDomain) {
 
         try {
-            ServiceProvider application = applicationManagementService.getServiceProvider(applicationId, tenantDomain);
+            ServiceProvider application = applicationManagementService.
+                    getApplicationByResourceId(applicationId, tenantDomain);
             if (application == null) {
                 throw handleError(Response.Status.NOT_FOUND, Constants.ErrorMessages.ERROR_CODE_APPLICATION_NOT_FOUND,
                         applicationId, tenantDomain);
