@@ -246,14 +246,10 @@ public class AuthorizedAppsService {
                     OAUTH2, applicationId, tenantDomain);
         }
         String clientId = inboundAuthenticationRequestConfig.getInboundAuthKey();
-        String applicationName = application.getApplicationName();
 
         OAuthAppRevocationRequestDTO oAuthAppRevocationRequestDTO = new OAuthAppRevocationRequestDTO();
         oAuthAppRevocationRequestDTO.setApplicationResourceId(applicationId);
-        oAuthAppRevocationRequestDTO.setApplicationName(applicationName);
         oAuthAppRevocationRequestDTO.setConsumerKey(clientId);
-        oAuthAppRevocationRequestDTO.setSaasApp(application.isSaasApp());
-        oAuthAppRevocationRequestDTO.setTenantDomain(tenantDomain);
         try {
             oAuthAdminService.revokeIssuedTokensByApplication(oAuthAppRevocationRequestDTO);
         } catch (IdentityOAuthAdminException e) {
