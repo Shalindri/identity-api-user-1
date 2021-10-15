@@ -54,8 +54,8 @@ public class Constants {
         ERROR_CODE_GET_APP_BY_USER("15005", "Error retrieving authorized applications",
                 "A system error occurred while retrieving authorized applications for " +
                         "user: %s"),
-        ERROR_CODE_REVOKE_TOKEN_BY_APP_ID("15006", "Error revoking issued tokens", "A system " +
-                "error occurred while revoking issued tokens for application ID: %s in tenant domain: %s");
+        ERROR_CODE_REVOKE_TOKEN_BY_APP_ID("15006", "Error revoking tokens", "An error " +
+                "occurred while revoking tokens for application ID: %s in tenant domain: %s");
 
         private final String code;
         private final String message;
